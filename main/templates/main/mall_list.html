@@ -1,0 +1,41 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}المراكز التجارية{% endblock %}
+{% block content %}
+<div class="container py-4" style="margin-top: 60px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">المراكز التجارية</h2>
+        <a href="/malls/add/" class="btn btn-primary">+ إضافة مركز تجاري جديد</a>
+    </div>
+    <div class="row g-4" style="margin-top: 40px;">
+        {% for mall in malls %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="d-flex justify-content-center" style="margin-top:-40px;">
+                    {% if mall.image %}
+                        <img src="{{ mall.image.url }}" alt="صورة المركز" class="rounded-circle border border-3 border-primary" style="width:100px;height:100px;object-fit:cover;background:#f3f6fa;">
+                    {% else %}
+                        <div class="rounded-circle bg-secondary" style="width:100px;height:100px;"></div>
+                    {% endif %}
+                </div>
+                <div class="card-body text-center pt-4">
+                    <h5 class="card-title text-primary">{{ mall.name }}</h5>
+                    <div class="text-muted mb-1">{{ mall.mall_type }}</div>
+                    <div class="small mb-1">المحافظة: {{ mall.governorate }}</div>
+                    <div class="small mb-2">أوقات العمل: {{ mall.working_hours }}</div>
+                    <div class="d-flex justify-content-center gap-2 mt-2">
+                        <a href="/malls/{{ mall.id }}/edit/" class="btn btn-outline-warning btn-sm">تعديل</a>
+                        <a href="/malls/{{ mall.id }}/products/" class="btn btn-outline-success btn-sm">عرض المنتجات</a>
+                        <a href="/malls/{{ mall.id }}/delete/" class="btn btn-outline-danger btn-sm" onclick="return confirm('هل أنت متأكد من حذف المركز التجاري؟');">حذف</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">لا يوجد مراكز تجارية بعد.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <link rel="stylesheet" href="/static/main/sidebar.css">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 32px 24px 24px 24px;
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        .login-row {
+            margin-bottom: 18px;
+        }
+        .login-label {
+            color: #888;
+            font-size: 0.97rem;
+            margin-bottom: 2px;
+            display: block;
+        }
+        .login-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            margin-top: 4px;
+        }
+        .login-btn {
+            display: block;
+            width: 100%;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 18px;
+            transition: background 0.2s;
+        }
+        .login-btn:hover {
+            background: #125ea2;
+        }
+        .login-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px 0;
+            text-align: center;
+            border-radius: 6px;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-title">تسجيل الدخول</div>
+        <div id="login-message" class="login-message" style="display:none;"></div>
+        <form id="login-form" method="post">
+            {% csrf_token %}
+            <div class="login-row">
+                <label class="login-label">اسم المستخدم أو البريد الإلكتروني:</label>
+                <input type="text" name="username" id="username" class="login-input" required>
+            </div>
+            <div class="login-row">
+                <label class="login-label">كلمة المرور:</label>
+                <input type="password" name="password" id="password" class="login-input" required>
+            </div>
+            <button class="login-btn" type="submit">دخول</button>
+        </form>
+    </div>
+    <script>
+    document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const msgDiv = document.getElementById('login-message');
+        try {
+            const response = await fetch('/api/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({username, password})
+            });
+            const data = await response.json();
+            if (data.success) {
+                msgDiv.style.display = 'block';
+                msgDiv.style.background = '#d4edda';
+                msgDiv.style.color = '#155724';
+                msgDiv.innerText = data.message;
+                setTimeout(() => { window.location.href = '/'; }, 1000);
+            } else {
+                msgDiv.style.display = 'block';
+                msgDiv.style.background = '#f8d7da';
+                msgDiv.style.color = '#721c24';
+                msgDiv.innerText = data.message;
+            }
+        } catch (error) {
+            msgDiv.style.display = 'block';
+            msgDiv.style.background = '#f8d7da';
+            msgDiv.style.color = '#721c24';
+            msgDiv.innerText = 'حدث خطأ في الاتصال بالخادم. تأكد من اتصالك وجرب مرة أخرى.';
+        }
+    });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,57 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title text-center mb-4">{% if is_edit %}تعديل منتج{% else %}إضافة منتج{% endif %} - {{ mall.name }}</h4>
+                    <form method="post" enctype="multipart/form-data" id="product-form">
+                        {% csrf_token %}
+                        
+                        {% if is_edit and product.image %}
+                            <div class="text-center mb-3">
+                                <label for="id_image" style="cursor: pointer;" title="تغيير الصورة">
+                                    <img src="{{ product.image.url }}" class="rounded-circle border border-2" style="width:90px;height:90px;object-fit:cover;" alt="صورة المنتج">
+                                </label>
+                                <div>
+                                    <button type="submit" name="delete_image" class="btn btn-danger btn-sm mt-2" form="product-form">حذف الصورة</button>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        {{ form.name|as_crispy_field }}
+                        {{ form.description|as_crispy_field }}
+                        {{ form.price|as_crispy_field }}
+                        
+                        {% if not product.image %}
+                           {{ form.image|as_crispy_field }}
+                        {% else %}
+                            <div style="display:none;">{{ form.image }}</div>
+                        {% endif %}
+
+                        <button type="submit" class="btn btn-primary w-100">{% if is_edit %}حفظ التعديلات{% else %}إضافة{% endif %}</button>
+                        <a href="{% url 'mall_products' mall.id %}" class="btn btn-secondary w-100 mt-2">إلغاء</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInput = document.querySelector('#id_image');
+        const imageLabel = document.querySelector('label[for="id_image"]');
+        
+        if (imageLabel && imageInput) {
+            imageLabel.addEventListener('click', function(event) {
+                event.preventDefault();
+                imageInput.click();
+            });
+        }
+    });
+</script>
+{% endblock %} 
